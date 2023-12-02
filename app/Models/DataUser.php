@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Entities\User;
-use App\Entities\Company;
+use App\Models\User;
+use App\Models\Company;
 
 
 class DataUser extends Model

@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Entities;
-use App\Entities\User;
+namespace App\Models;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Makeuser extends Model {

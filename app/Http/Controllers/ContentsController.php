@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Contents;
-use App\Entities\Courses;
-use App\Entities\Interaction;
+use App\Models\Contents;
+use App\Models\Courses;
+use App\Models\Interaction;
 use Illuminate\Http\Request;
-use App\Entities\Taxonomies;
+use App\Models\Taxonomies;
 use App\Http\Controllers\CoursesController;
 use Auth, Session, Carbon\Carbon, DB, Redirect;
+use App\Http\Controllers\NotificationController as Notify; 
 
 class ContentsController extends Controller
 {
@@ -26,7 +27,7 @@ class ContentsController extends Controller
         $this->middleware(['permission:content.show'])->only(['show']);
         $this->middleware(['permission:content.list'])->only(['lista']);
         $this->middleware(['permission:content.destroy'])->only(['destroy']);
-        $this->middleware('auth');
+        
     }
 
     public function valArray($type)
@@ -79,23 +80,13 @@ class ContentsController extends Controller
         }
 
         if (count($contents) == 0) {
-            return response()->json(
-                [
-                    'type' => 'ok',
-                    'message' => 'No se encontraron',
-                    'data' => [],
-                ],
-                201
-            );
+            return Notify::ms('ok', 201, $final, 'No se encontro info');
         }
-
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Lista de datos encontrados para edición',
-                'data' => [$type, $contents, $course_id],
-            ],
-            201
+        return Notify::ms(
+            'ok',
+            201,
+            [$type, $contents, $course_id],
+            'Lista de datos encontrados para edición'
         );
     }
 
@@ -121,15 +112,7 @@ class ContentsController extends Controller
                 }
             }
         }
-
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'No se encontraron',
-                'error' => [$selection, $eject],
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, [$selection, $eject], 'No se encontraron');
     }
 
     public function validateRegistro($courseId)
@@ -147,13 +130,11 @@ class ContentsController extends Controller
                         'snackbar-danger',
                         'Debe esperar el proceso de matrícula'
                     );
-                    return response()->json(
-                        [
-                            'type' => 'ok',
-                            'message' => 'No se encontraron',
-                            'error' => [$selection, $eject],
-                        ],
-                        201
+                    return Notify::ms(
+                        'ok',
+                        201,
+                        [$selection, $eject],
+                        'No se encontraron'
                     );
                 }
             } else {
@@ -180,7 +161,7 @@ class ContentsController extends Controller
             ->first();
 
         if ($content == null) {
-            return abort(404);
+            return Notify::ms('no-found', 404, $validator, 'No existe el contenido');
         }
 
         if ($request->course_id != null && $content->count() > 0) {
@@ -193,7 +174,7 @@ class ContentsController extends Controller
             }
 
             if ($request->course_id == null) {
-                return abort(404);
+                return Notify::ms('no-found', 404, $validator, 'No existe el certificado');
             }
 
             $allContents = DB::table('course_configurate')
@@ -272,20 +253,23 @@ class ContentsController extends Controller
                     $typeContents[6][] = $typeContent['key'];
                 }
             }
-            return view(
-                'backend.content.only-content',
-                compact(
-                    'content',
-                    'type',
-                    'course',
-                    'allContents',
-                    'interactions',
-                    'typeContents',
-                    'closed_at'
-                )
+            // view: backend.content.only-content
+            return Notify::ms(
+                'ok',
+                201,
+                [
+                    $content,
+                    $type,
+                    $course,
+                    $allContents,
+                    $interactions,
+                    $typeContents,
+                    $closed_at,
+                ],
+                'Se a listado correctamente'
             );
         } else {
-            return abort(404);
+            return Notify::ms('no-found', 404, [], 'No encontrado');
         }
     }
 
@@ -303,10 +287,12 @@ class ContentsController extends Controller
         $selection = $validate[0];
         $eject = $validate[1];
         $clase = config('paramslist.content:classroom');
-
-        return view(
-            'backend.content.create',
-            compact('type', 'course_id', 'selection', 'eject', 'clase')
+        // view: backend.content.create
+        return Notify::ms(
+            'ok',
+            201,
+            [$type, $course_id, $selection, $eject, $clase],
+            'Se a listado correctamente'
         );
     }
 
@@ -397,7 +383,7 @@ class ContentsController extends Controller
         $taxonomies = Taxonomies::all();
 
         if ($type == null) {
-            return abort(404);
+            return Notify::ms('no-found', 404, $validator, 'No existe el contenido');
         }
         $taxonomies = Taxonomies::all();
 
@@ -410,21 +396,23 @@ class ContentsController extends Controller
         }
 
         if ($content == null) {
-            return abort(404);
+            return Notify::ms('no-found', 404, $validator, 'No existe el contenido');
         }
-
-        return view(
-            'backend.content.update',
-            compact(
-                'type',
-                'content',
-                'max',
-                'taxonomies',
-                'course_id',
-                'selection',
-                'eject',
-                'clase'
-            )
+        // view: backend.content.update
+        return Notify::ms(
+            'ok',
+            201,
+            [
+                $type,
+                $content,
+                $max,
+                $taxonomies,
+                $course_id,
+                $selection,
+                $eject,
+                $clase,
+            ],
+            'Se a listado correctamente'
         );
     }
 

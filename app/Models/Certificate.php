@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\BinaryUuid\HasBinaryUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Entities\Company;
+use App\Models\Company;
 
 class Certificate extends Model {
       use SoftDeletes;

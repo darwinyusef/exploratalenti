@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon, Auth, Redirect, Session, Validator, Storage, File;
-use App\Entities\Files as MasterFiles;
-
+use App\Models\Files as MasterFiles;
+use App\Http\Controllers\NotificationController as Notify; 
 
 class HelperController extends Controller
 {

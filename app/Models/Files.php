@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Entities\User;
-use App\Entities\Post;
-use App\Entities\Slider;
-use App\Entities\Options;
-use App\Entities\Taxonomies;
-use App\Entities\Links;
-use App\Entities\Contents;
-use App\Entities\Courses;
-use App\Entities\Interaction;
+use App\Models\User;
+use App\Models\Post;
+use App\Models\Slider;
+use App\Models\Options;
+use App\Models\Taxonomies;
+use App\Models\Links;
+use App\Models\Contents;
+use App\Models\Courses;
+use App\Models\Interaction;
 
 class Files extends Model {
     use SoftDeletes;

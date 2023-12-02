@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Entities\DataUser;
-use App\Entities\Post;
-use App\Entities\State;
-use App\Entities\Files;
+use App\Models\DataUser;
+use App\Models\Post;
+use App\Models\State;
+use App\Models\Files;
 
 class User extends Authenticatable {
     use HasRoles;

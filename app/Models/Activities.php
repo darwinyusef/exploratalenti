@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Entities\User;
+use App\Models\User;
 
-class Laboratories extends Model {
+class Activities extends Model {
   use SoftDeletes;
   protected $fillable = [ 'exam', 'icon', 'slug', 'synonymous', 'clinical_use', 'preparation', 'meaning', 'range', 'method','user_id' ];
 

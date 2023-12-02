@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Entities\DataUser;
-use App\Entities\Certificate;
+use App\Models\DataUser;
+use App\Models\Certificate;
 
 class Company extends Model
 {

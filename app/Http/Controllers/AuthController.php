@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Entities\Company;
-use App\Entities\Courses;
-use App\Entities\User;
-use App\Entities\DataUser as Data;
+use App\Models\Company;
+use App\Models\Courses;
+use App\Models\User;
+use App\Models\DataUser as Data;
 use App\Http\Controllers\StateController;
+use App\Http\Controllers\NotificationController as Notify; 
 
 use Illuminate\Http\Request;
 
@@ -232,14 +233,7 @@ class AuthController extends Controller
     public function reg_create()
     {
         $companies = Company::all();
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Registros creados',
-                'error' => $companies,
-            ],
-            201
-        );
+        Notify::ms('ok', 201, $companies); 
     }
 
     public function reg_store(Request $request)

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Entities\Categories;
-use App\Entities\Services;
+use App\Models\Categories;
+use App\Models\Services;
+use App\Http\Controllers\NotificationController as Notify; 
 
 use Validator, Redirect;
 
@@ -13,27 +14,13 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Categories::all();
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Student Update Successfully',
-                'data' => $categories,
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $final, 'Se a listado correctamente');
     }
 
     public function create()
     {
         $services = Services::all();
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Student Update Successfully',
-                'data' => $services,
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $services, 'Se a listado correctamente');
     }
 
     public function store(Request $request)
@@ -43,24 +30,15 @@ class CategoryController extends Controller
         $data = array_add($data, 'slug', str_slug($data['name'], '-'));
         $validator = Validator::make($data, Categories::$rules);
         if ($validator->fails()) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'Validations Error',
-                    'error' => $validator,
-                ],
-                400
-            );
+            return Notify::ms('error', 400, $validator, 'Validations Error');
         } else {
             // se carga la solicitud
-            Categories::create($data);
-
-            return response()->json(
-                [
-                    'type' => 'ok',
-                    'message' => 'Se a creado un nuevo usuario',
-                ],
-                201
+            $final = Categories::create($data);
+            return Notify::ms(
+                'ok',
+                201,
+                $final,
+                'Se a creado un nuevo usuario'
             );
         }
     }
@@ -69,13 +47,11 @@ class CategoryController extends Controller
     {
         $services = Services::all();
         $category = Categories::findOrFail($id);
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Se a creado un nuevo usuario',
-                'data' => [$category, $services],
-            ],
-            201
+        return Notify::ms(
+            'ok',
+            201,
+            [$category, $services],
+            'Se a listado correctamente'
         );
     }
 
@@ -88,25 +64,11 @@ class CategoryController extends Controller
         //se modifican las entradas on x 1 para que se valide el bolean
         $validator = Validator::make($data, Categories::$rules);
         if ($validator->fails()) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'Validations Error',
-                    'error' => $validator,
-                ],
-                400
-            );
+            return Notify::ms('error', 400, $validator, 'Validations Error');
         } else {
             // se carga la solicitud
-            Categories::where('id', $id)->update($data);
-            return response()->json(
-                [
-                    'type' => 'ok',
-                    'message' => 'Se a Editado el Registro',
-                    'data' => [$category, $services],
-                ],
-                201
-            );
+            $final = Categories::where('id', $id)->update($data);
+            return Notify::ms('ok', 201, $final, 'Se a Editado el Registro');
         }
     }
 
@@ -117,23 +79,9 @@ class CategoryController extends Controller
 
         if ($force == 1) {
             $group->forceDelete();
-            return response()->json(
-                [
-                    'type' => 'ok',
-                    'message' => 'Se a Elimninado el Registro',
-                    'data' => [$group],
-                ],
-                201
-            );
+            return Notify::ms('ok', 201, $group, 'Se a Elimninado el Registro');
         }
         $group->delete();
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Se a Elimninado el Registro',
-                'data' => [$group],
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $group, 'Se a Elimninado el Registro');
     }
 }

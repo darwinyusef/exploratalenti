@@ -12,6 +12,7 @@ use App\Models\Student;
 use App\Models\Selections;
 use App\Models\Programs;
 use App\Imports\StudentImport;
+use App\Http\Controllers\NotificationController as Notify; 
 
 class StudentController extends Controller
 {
@@ -69,25 +70,30 @@ class StudentController extends Controller
             $users = [];
         }
 
-        if( ($users->currentPage() + 1) > $users->lastPage()) {
+        if ($users->currentPage() + 1 > $users->lastPage()) {
             $next = $users->currentPage();
         } else {
             $next = $users->currentPage() + 1;
         }
 
-        if( ($users->currentPage()) == 1) {
+        if ($users->currentPage() == 1) {
             $previous = $users->currentPage();
         } else {
             $previous = $users->currentPage() - 1;
         }
-
-        return view('home',[
-            'users' => $users,
-            'next' => $next,
-            'previous' => $previous,
-            'lastpage' => $users->lastPage(),
-            'currentPage' => $users->currentPage(),
-        ]);
+        return Notify::ms(
+            'ok',
+            201,
+            [
+                'users' => $users,
+                'next' => $next,
+                'previous' => $previous,
+                'lastpage' => $users->lastPage(),
+                'currentPage' => $users->currentPage(),
+            ],
+            'Se a listado correctamente'
+        );
+        // view: home
     }
 
     /**
@@ -101,10 +107,7 @@ class StudentController extends Controller
 
         //here 422 means unprocessable entity
         if ($validation->fails()) {
-            return response()->json(
-                ['type' => 'error', 'message' => $validation->errors()],
-                422
-            );
+            return Notify::ms('error', 400, $validator, 'Validations Error');
         }
 
         Student::create([
@@ -121,10 +124,7 @@ class StudentController extends Controller
             'register' => 'CONNECTED',
         ]);
 
-        return response()->json(
-            ['type' => 'ok', 'message' => 'Student Created Successfully'],
-            201
-        );
+        return Notify::ms('ok', 201, [], 'Student Created Successfully');
     }
 
     /**
@@ -133,7 +133,7 @@ class StudentController extends Controller
     public function show(Request $req, string $uuid)
     {
         $students = Student::where('uuid', $uuid)->first();
-        return response()->json($students);
+        return Notify::ms('ok', 201, $students, 'Se a listado correctamente');
     }
 
     /**
@@ -143,22 +143,18 @@ class StudentController extends Controller
     {
         $students = Student::where('document', $document)->first();
         if ($students != null) {
-            return response()->json(
-                [
-                    'type' => 'ok',
-                    'message' => 'Student as Search Successfully',
-                    'data' => $students,
-                ],
-                201
+            return Notify::ms(
+                'ok',
+                201,
+                $students,
+                'Student as Search Successfully'
             );
         } else {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'El estudiante no existe en la base de datos',
-                    'data' => $students,
-                ],
-                404
+            return Notify::ms(
+                'error',
+                400,
+                $students,
+                'El estudiante no existe en la base de datos'
             );
         }
     }
@@ -174,12 +170,11 @@ class StudentController extends Controller
         $onlyEmailValidate = Student::where('uuid', $uuid)->first();
 
         if ($onlyEmailValidate == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'Student dont exist in database',
-                ],
-                404
+            return Notify::ms(
+                'no-found',
+                404,
+                $validator,
+                'Student dont exist in database'
             );
         }
 
@@ -193,10 +188,7 @@ class StudentController extends Controller
 
         //here 422 means unprocessable entity
         if ($validation->fails()) {
-            return response()->json(
-                ['type' => 'error', 'message' => $validation->errors()],
-                422
-            );
+            return Notify::ms('error', 400, $validator, 'Validations Error');
         }
 
         $upStudent = Student::where('uuid', $uuid)->update([
@@ -209,14 +201,11 @@ class StudentController extends Controller
         ]);
 
         $upStudentAll = Student::where('uuid', $uuid)->first();
-
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Student Update Successfully',
-                'data' => $upStudentAll,
-            ],
-            201
+        return Notify::ms(
+            'ok',
+            201,
+            $upStudentAll,
+            'Student Update Successfully'
         );
     }
 
@@ -235,12 +224,11 @@ class StudentController extends Controller
         $onlyEmailValidate = Student::where('uuid', $uuid)->first();
 
         if ($onlyEmailValidate == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'Student dont exist in database',
-                ],
-                404
+            return Notify::ms(
+                'no-found',
+                404,
+                [],
+                'Student dont exist in database'
             );
         }
 
@@ -254,10 +242,7 @@ class StudentController extends Controller
 
         //here 422 means unprocessable entity
         if ($validation->fails()) {
-            return response()->json(
-                ['type' => 'error', 'message' => $validation->errors()],
-                422
-            );
+            return Notify::ms('error', 400, $validator, 'Validations Error');
         }
 
         $upStudent = Student::where('uuid', $uuid)->update([
@@ -270,14 +255,11 @@ class StudentController extends Controller
         ]);
 
         $upStudentAll = Student::where('uuid', $uuid)->first();
-
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Student Update Successfully',
-                'data' => $upStudentAll,
-            ],
-            201
+        return Notify::ms(
+            'ok',
+            201,
+            $upStudentAll,
+            'Student Update Successfully'
         );
     }
 
@@ -292,12 +274,11 @@ class StudentController extends Controller
         $onlyDocumentValidate = Student::where('uuid', $uuid)->first();
 
         if ($onlyDocumentValidate == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'Student dont exist in database',
-                ],
-                404
+            return Notify::ms(
+                'no-found',
+                404,
+                $final,
+                'Student dont exist in database'
             );
         }
 
@@ -318,10 +299,7 @@ class StudentController extends Controller
         );
 
         if ($validation->fails()) {
-            return response()->json(
-                ['type' => 'error', 'message' => $validation->errors()],
-                422
-            );
+            return Notify::ms('error', 400, $validator, 'Validations Error');
         }
 
         $upStudent = Student::where('uuid', $uuid)->update([
@@ -334,13 +312,11 @@ class StudentController extends Controller
 
         $upStudentAll = Student::where('uuid', $uuid)->first();
 
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Student Update Document Successfully',
-                'data' => $upStudentAll,
-            ],
-            201
+        return Notify::ms(
+            'ok',
+            201,
+            $upStudentAll,
+            'Student Update Document Successfully'
         );
     }
 
@@ -362,10 +338,7 @@ class StudentController extends Controller
 
         //here 422 means unprocessable entity
         if ($validation->fails()) {
-            return response()->json(
-                ['type' => 'error', 'message' => $validation->errors()],
-                422
-            );
+            return Notify::ms('error', 400, $validator, 'Validations Error');
         }
 
         $selections = Selections::where('students_id', $id->id)->first();
@@ -395,13 +368,11 @@ class StudentController extends Controller
         }
 
         $selectionsFinal = Selections::where('students_id', $id->id)->first();
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Selection Created Successfully',
-                'selection' => $selectionsFinal,
-            ],
-            201
+        return Notify::ms(
+            'ok',
+            201,
+            $selectionsFinal,
+            'Selection Created Successfully'
         );
     }
 
@@ -412,17 +383,17 @@ class StudentController extends Controller
         $student = Student::where('uuid', $uuid)->first();
 
         if (is_null($student)) {
-            return response()->json([
-                'type' => 'error',
-                'message' => 'El estudiante no se encuentra en la selección',
-                'data' => [],
-            ]);
+            return Notify::ms(
+                'ok',
+                201,
+                [],
+                'El estudiante no se encuentra en la selección'
+            );
         }
 
         $reportValidtion = Selections::select('programs_a', 'programs_b')
             ->where('students_id', $student->id)
             ->first();
-
 
         if (!is_null($reportValidtion->programs_a)) {
             $reportA = Selections::where('students_id', $student->id)
@@ -435,14 +406,14 @@ class StudentController extends Controller
                 ->leftJoin('programs', 'programs_b', '=', 'programs.id')
                 ->first();
         }
-        return response()->json(
+        return Notify::ms(
+            'ok',
+            201,
             [
-                'type' => 'ok',
-                'message' => 'Report Successfully',
                 'data' => [$reportA, $reportB],
                 'student' => $student,
             ],
-            201
+            'Report Successfully'
         );
     }
 
@@ -460,7 +431,7 @@ class StudentController extends Controller
     public function indexPrograms()
     {
         $program = Programs::all();
-        return response()->json($program);
+        return Notify::ms('ok', 201, $program, 'Se a listado correctamente');
     }
 
     /**
@@ -469,13 +440,7 @@ class StudentController extends Controller
     public function destroy(Request $req, string $uuid)
     {
         Student::where('uuid', $uuid)->delete();
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Student Delete Successfully',
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $final, 'Student Delete Successfully');
     }
 
     public function uploadData(Request $req)

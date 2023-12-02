@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Entities\Courses;
-use App\Entities\Certificate;
-use App\Entities\Company;
-use App\Entities\State;
-use App\Entities\DataUser as Data;
-use App\Entities\User;
+use App\Models\Courses;
+use App\Models\Certificate;
+use App\Models\Company;
+use App\Models\State;
+use App\Models\DataUser as Data;
+use App\Models\User;
 use Auth, Validator, Redirect, Session;
 use Carbon\Carbon, QrCode, DB;
+use App\Http\Controllers\NotificationController as Notify; 
 
 class CertificateController extends Controller
 {
@@ -23,14 +24,7 @@ class CertificateController extends Controller
             'course',
             'updated_at'
         )->get();
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Certificado creado',
-                'data' => $totales,
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $totales, 'Certificado creado');
     }
 
     public function image_certificate_store(Request $request)
@@ -42,14 +36,7 @@ class CertificateController extends Controller
             'course',
             'updated_at'
         )->get();
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Certificado seleccionado',
-                'data' => $totales,
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $totales, 'Certificado seleccionado');
     }
 
     public function register_certificate($id)
@@ -69,15 +56,7 @@ class CertificateController extends Controller
             )
             ->orderBy('courses.course', 'asc')
             ->get();
-
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Register Certificate',
-                'data' => $userCourses,
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $userCourses, 'Register Certificate');
     }
 
     public function certificate_company()
@@ -113,22 +92,18 @@ class CertificateController extends Controller
             }
         }
         if (!isset($certificates)) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'Certificados por compañía',
-                    'error' => $certificates,
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                $certificates,
+                'Certificados por compañía'
             );
         }
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'No existen actualmente certificados',
-                'data' => $userCourses,
-            ],
-            201
+        return Notify::ms(
+            'ok',
+            201,
+            $userCourses,
+            'No existen actualmente certificados'
         );
     }
 
@@ -168,49 +143,37 @@ class CertificateController extends Controller
     {
         $data = Certificate::findOrFail($id);
         if ($data->cedula == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' =>
-                        'Se requiere del número de Identificación para el cargue del Certificado',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Se requiere del número de Identificación para el cargue del Certificado'
             );
         }
         if ($data->firstname == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' =>
-                        'Se requiere del número de Primer Nombre para el cargue del Certificado',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Se requiere del número de Primer Nombre para el cargue del Certificado'
             );
         }
         if ($data->lastname == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' =>
-                        'Se requiere del número de Apellido para el cargue del Certificado',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Se requiere del número de Apellido para el cargue del Certificado'
             );
         }
 
         $course = Courses::select('id', 'json')->find($data->idcourse);
         if ($course == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' =>
-                        'Error en la selección del curso del usuario: por defina el curso del usuario',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Error en la selección del curso del usuario: por defina el curso del usuario'
             );
         }
 
@@ -226,13 +189,11 @@ class CertificateController extends Controller
         );
 
         if (!str_contains($data['certificate'], 'http')) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'Error en la configuracion del certificado',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Error en la configuracion del certificado'
             );
         }
 
@@ -254,48 +215,36 @@ class CertificateController extends Controller
     {
         $data = Certificate::findOrFail($id);
         if ($data->cedula == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' =>
-                        'Se requiere del número de Identificación para el cargue del Certificado',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Se requiere del número de Identificación para el cargue del Certificado'
             );
         }
         if ($data->firstname == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' =>
-                        'Se requiere del número de Primer Nombre para el cargue del Certificado',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Se requiere del número de Primer Nombre para el cargue del Certificado'
             );
         }
         if ($data->lastname == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' =>
-                        'Se requiere del número de Apellido para el cargue del Certificado',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Se requiere del número de Apellido para el cargue del Certificado'
             );
         }
         $course = Courses::select('id', 'json')->find($data->idcourse);
         if ($course == null) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' =>
-                        'Error en la selección del curso del usuario: por defina el curso del usuario',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Error en la selección del curso del usuario: por defina el curso del usuario'
             );
         }
 
@@ -312,24 +261,15 @@ class CertificateController extends Controller
         );
 
         if (!str_contains($data['certificate'], 'http')) {
-            return response()->json(
-                [
-                    'type' => 'error',
-                    'message' => 'Error en la configuracion del certificado',
-                    'error' => [],
-                ],
-                400
+            return Notify::ms(
+                'error',
+                400,
+                [],
+                'Error en la configuracion del certificado'
             );
         }
 
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Visualización de datos',
-                'data' => $data,
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $data, 'Visualización de datos');
     }
 
     public function certificate_destroy(Request $request, $id)
@@ -339,52 +279,24 @@ class CertificateController extends Controller
 
         if ($force == 1) {
             $group->forceDelete();
-            return response()->json(
-                [
-                    'type' => 'ok',
-                    'message' => 'Se a Elimninado el Registro',
-                    'error' => [],
-                ],
-                201
-            );
+            return Notify::ms('ok', 201, $data, 'Se a Elimninado el Registro');
         }
         $group->delete();
         Session::flash('snackbar-warning', '');
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Se a Elimninado el Registro',
-                'error' => [],
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, $data, 'Se a Elimninado el Registro');
     }
 
     public function certificado_search()
     {
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Información certificado search',
-                'error' => [],
-            ],
-            201
-        );
+        return Notify::ms('ok', 201, [], 'Información certificado search');
     }
 
     public function certificado_search_result(Request $request)
     {
         $certificates = Certificate::where('cedula', $request->cedula)->get();
         if (count($certificates) == 0) {
-            return abort(404);
+            return Notify::ms('no-found', 404, $validator, 'No existe el certificado');
         }
-        return response()->json(
-            [
-                'type' => 'ok',
-                'message' => 'Se a encontrado el Registro',
-                'error' => $certificates,
-            ],
-            201
-        );
+        return Notify::ms('ok', 201,  $certificates, 'Se a encontrado el Registro');
     }
 }

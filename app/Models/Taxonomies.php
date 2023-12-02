@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Entities\Files;
-use App\Entities\Post;
+use App\Models\Files;
+use App\Models\Post;
 
 class Taxonomies extends Model {
   use SoftDeletes;
